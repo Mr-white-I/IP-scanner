@@ -14,7 +14,7 @@ init(autoreset=True)
 def display_banner():
     banner = pyfiglet.figlet_format("I P  S c a n n e r", font="slant")
     print(Fore.GREEN + banner)
-    print(Fore.YELLOW + "[+] @Mahesh | Powered by ChatGPT\n")
+    print(Fore.YELLOW + "[+] @Cyber_Nerd | Powered by ChatGPT\n")
 
 # Function to check if the host is up using ping (handles Windows and Linux)
 def is_host_up(target):
