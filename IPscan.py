@@ -13,7 +13,7 @@ init(autoreset=True)
 # Display Hacker-Style Banner
 def display_banner():
     banner = pyfiglet.figlet_format("I P  S c a n n e r", font="slant")
-    print(Fore.RED + banner)
+    print(Fore.GREEn + banner)
     print(Fore.YELLOW + "[+] @Mahesh | Powered by ChatGPT\n")
 
 # Function to check if the host is up using ping (handles Windows and Linux)
