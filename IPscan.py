@@ -4,7 +4,17 @@ import os
 import platform
 import random
 import time
+import pyfiglet
+from colorama import Fore, init
 
+# Initialize colorama
+init(autoreset=True)
+
+# Display Hacker-Style Banner
+def display_banner():
+    banner = pyfiglet.figlet_format("I P  S c a n n e r", font="slant")
+    print(Fore.GREEN + banner)
+    print(Fore.YELLOW + "[+] @Mahesh | powered by chatgpt\n")
 
 # Function to check if the host is up using ping (handles Windows and Linux)
 def is_host_up(target):
@@ -12,7 +22,6 @@ def is_host_up(target):
     response = os.system(
         f"ping {param} {target} > nul 2>&1" if platform.system().lower() == "windows" else f"ping {param} {target} > /dev/null 2>&1")
     return response == 0
-
 
 # Function to grab banners for system info
 def grab_banner(target, port):
@@ -26,7 +35,6 @@ def grab_banner(target, port):
     except:
         return None
 
-
 # Function to perform a stealthy scan with randomized timing and retries
 def stealthy_scan_port(target, port, open_ports, closed_ports, filtered_ports, banners):
     try:
@@ -38,37 +46,31 @@ def stealthy_scan_port(target, port, open_ports, closed_ports, filtered_ports, b
 
         result = s.connect_ex((target, port))
         if result == 0:
-            print(f"[+] Port {port} is open")
+            print(Fore.GREEN + f"[+] Port {port} is open")
             open_ports.append(port)
             banner = grab_banner(target, port)
             if banner:
                 banners[port] = banner
         elif result in [111, 113, 10060]:  # Handle filtered/timeout responses
             filtered_ports.append(port)
-        else:
-            closed_ports.append(port)
-        s.close()
-    except Exception as e:
+    except:
         closed_ports.append(port)
-
 
 # Main function to control the scanner
 def port_scanner(target, ports):
-    print(f"Scanning target: {target}")
+    print(Fore.CYAN + f"Scanning target: {target}...\n")
 
-    # Check if the host is up
     if not is_host_up(target):
-        print("[-] Host is down or unreachable")
+        print(Fore.RED + "[-] Host is down or unreachable\n")
         return
     else:
-        print("[+] Host is up")
+        print(Fore.GREEN + "[+] Host is up\n")
 
     open_ports = []
     closed_ports = []
     filtered_ports = []
     banners = {}
 
-    # Multi-threading for faster scanning
     threads = []
     for port in ports:
         thread = threading.Thread(target=stealthy_scan_port,
@@ -76,28 +78,27 @@ def port_scanner(target, ports):
         threads.append(thread)
         thread.start()
 
-    # Wait for all threads to finish
     for thread in threads:
         thread.join()
 
-    # Display results
-    print("\nScan complete!")
-    print(f"Open ports: {len(open_ports)}" if open_ports else "No open ports found")
-    print(f"Closed ports: {len(closed_ports)}" if closed_ports else "No closed ports found")
-    print(f"Filtered ports: {len(filtered_ports)}" if filtered_ports else "No filtered ports found")
+    print(Fore.CYAN + "\nScan complete!")
+    print(Fore.GREEN + f"Open ports: {len(open_ports)}" if open_ports else Fore.YELLOW + "No open ports found")
+    print(Fore.RED + f"Closed ports: {len(closed_ports)}" if closed_ports else Fore.YELLOW + "No closed ports found")
+    print(Fore.MAGENTA + f"Filtered ports: {len(filtered_ports)}" if filtered_ports else Fore.YELLOW + "No filtered ports found")
 
-    # Display any banners grabbed
     if banners:
-        print("\nBanners grabbed:")
+        print(Fore.YELLOW + "\nBanners grabbed:")
         for port, banner in banners.items():
-            print(f"Port {port}: {banner}")
+            print(Fore.YELLOW + f"Port {port}: {banner}")
 
+# Entry point
+if __name__ == "__main__":
+    os.system("cls" if platform.system() == "Windows" else "clear")
+    display_banner()
 
-# Get user input
-target = input("Enter target IP or domain: ")
-start_port = int(input("Enter start port: "))
-end_port = int(input("Enter end port: "))
+    target = input(Fore.CYAN + "Enter target IP or domain: ")
+    start_port = int(input(Fore.CYAN + "Enter start port: "))
+    end_port = int(input(Fore.CYAN + "Enter end port: "))
 
-ports = range(start_port, end_port + 1)
-
-port_scanner(target, ports)
+    ports = range(start_port, end_port + 1)
+    port_scanner(target, ports)
